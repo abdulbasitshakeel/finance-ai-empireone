@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     { name: 'Input Tax', data: data.monthlyFinancialTrends.map(d => d.inputTax) },
                     { name: 'Net Purchases', data: data.monthlyFinancialTrends.map(d => d.netPurchases) }
                 ],
-                chart: { height: 350, type: 'area', toolbar: { show: false }, background: 'transparent' },
+                chart: { height: 350, type: 'area', toolbar: { show: false }, background: 'transparent', zoom: { enabled: false }, animations: { enabled: true } },
                 dataLabels: { enabled: false },
                 stroke: { curve: 'smooth', width: 2.5 },
                 colors: ['#ec4899', '#d946ef', '#8b5cf6'],

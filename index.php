@@ -42,21 +42,15 @@ include_once('include/auth.php');
             <div class="flex items-center">
                 <div class="relative">
                     <button id="profile-button" class="flex items-center space-x-2 p-1.5 pr-3 rounded-full hover:bg-slate-100 transition-colors duration-300">
-                        <img src="https://placehold.co/40x40/ec4899/ffffff?text=U" alt="User Avatar" class="w-8 h-8 rounded-full">
-                        <span class="font-medium text-sm text-slate-700 hidden sm:inline">User Name</span>
+                        <img src="https://placehold.co/40x40/ec4899/ffffff?text=<?= substr($sFullName, 0, 1) ?>" alt="User Avatar" class="w-8 h-8 rounded-full">
+                        <span class="font-medium text-sm text-slate-700 hidden sm:inline"><?= $sFullName ?></span>
                         <i id="profile-chevron" data-feather="chevron-down" class="w-5 h-5 text-slate-500 transition-transform duration-300"></i>
                     </button>
                     <!-- Dropdown Menu -->
                     <div id="profile-dropdown" class="profile-dropdown absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg overflow-hidden border border-slate-200">
                         <div class="px-4 py-3 border-b border-slate-200 bg-slate-50">
-                            <p class="text-sm font-semibold text-slate-900 truncate">User Name</p>
-                            <p class="text-xs text-slate-500">Administrator</p>
-                        </div>
-                        <div class="py-1">
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"><i
-                                data-feather="user" class="w-4 h-4 mr-3 text-slate-500"></i>Profile</a>
-                            <a href="#" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"><i
-                                data-feather="settings" class="w-4 h-4 mr-3 text-slate-500"></i>Settings</a>
+                            <p class="text-sm font-semibold text-slate-900 truncate"><?= $sFullName ?></p>
+                            <!-- <p class="text-xs text-slate-500">Administrator</p> -->
                         </div>
                         <div class="border-t border-slate-200 py-1">
                             <a href="logout.php" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i
@@ -183,7 +177,7 @@ include_once('include/auth.php');
                             <button id="resetFiltersBtn" class="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200">Reset</button>
                             <!-- Export Button -->
                             <button id="openExportModalBtn" class="px-4 py-2 text-sm font-medium text-white bg-pink-500 rounded-lg hover:bg-pink-600 transition">
-                                Export Excel
+                                Export
                             </button>
                         </div>
                     </div>
