@@ -1,5 +1,18 @@
+<?php
+
+include_once('include/db.php');
+
+if(isset($_SESSION['logined_user']))
+{
+  header('location: index.php');
+  exit;
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -87,13 +100,25 @@
     }
 
     @keyframes floatCircle {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(30px, -30px) scale(1.1); }
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(30px, -30px) scale(1.1);
+      }
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(30px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     .form-container {
@@ -130,8 +155,8 @@
       transform-origin: left top;
     }
 
-    .input-field:focus ~ .floating-label,
-    .input-field:not(:placeholder-shown) ~ .floating-label {
+    .input-field:focus~.floating-label,
+    .input-field:not(:placeholder-shown)~.floating-label {
       transform: translateY(-1.5rem) scale(0.8);
       color: #7e22ce;
     }
@@ -139,16 +164,15 @@
     /* 🌟 Logo animation (glow + pulse) */
     @keyframes logoGlow {
       0% {
-        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2))
-                drop-shadow(0 0 15px rgba(187, 210, 254, 0.4));
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 15px rgba(187, 210, 254, 0.4));
       }
+
       50% {
-        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4))
-                drop-shadow(0 0 30px rgba(187, 210, 254, 0.6));
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 30px rgba(187, 210, 254, 0.6));
       }
+
       100% {
-        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2))
-                drop-shadow(0 0 15px rgba(187, 210, 254, 0.4));
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 15px rgba(187, 210, 254, 0.4));
       }
     }
 
@@ -183,22 +207,21 @@
     <div class="form-container w-full max-w-md">
       <div class="glass-container rounded-2xl p-8 sm:p-10" style="padding: 50px 40px;">
         <div class="text-center mb-8 relative z-2 flex flex-col items-center justify-center">
-          <img 
-            src="assets/images/logo.png" 
-            alt="EmpireOne Logo"
-            class="h-20 sm:h-24 w-auto mb-4 object-contain logo-animate" style="height: 5rem;"
-          />
+          <img src="assets/images/logo.png" alt="EmpireOne Logo"
+            class="h-20 sm:h-24 w-auto mb-4 object-contain logo-animate" style="height: 5rem;" />
           <h2 class="text-4xl font-bold text-gray-900">Welcome</h2>
           <p class="text-gray-700 mt-1">Login To Continue</p>
         </div>
 
-        <form action="#" method="POST">
+        <form>
           <div class="space-y-8">
             <div class="relative input-group">
               <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <i data-feather="mail" class="w-5 h-5 text-gray-500 input-icon transition-colors duration-300"></i>
               </div>
-              <input id="email" name="email" type="email" autocomplete="email" required class="input-field block w-full pl-12 pr-4 py-3 rounded-lg placeholder-transparent focus:outline-none" placeholder="Email address" />
+              <input id="email" name="email" type="email" autocomplete="email" required
+                class="input-field block w-full pl-12 pr-4 py-3 rounded-lg placeholder-transparent focus:outline-none"
+                placeholder="Email address" />
               <label for="email" class="floating-label">Email address</label>
             </div>
 
@@ -206,14 +229,15 @@
               <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <i data-feather="lock" class="w-5 h-5 text-gray-500 input-icon transition-colors duration-300"></i>
               </div>
-              <input id="password" name="password" type="password" autocomplete="current-password" required class="input-field block w-full pl-12 pr-4 py-3 rounded-lg placeholder-transparent focus:outline-none" placeholder="Password" />
+              <input id="password" name="password" type="password" autocomplete="current-password" required
+                class="input-field block w-full pl-12 pr-4 py-3 rounded-lg placeholder-transparent focus:outline-none"
+                placeholder="Password" />
               <label for="password" class="floating-label">Password</label>
             </div>
           </div>
 
           <div class="mt-8">
-            <button 
-              type="submit"
+            <button type="submit"
               class="btn-login w-full flex justify-center py-3 px-4 rounded-lg text-base font-medium text-white focus:outline-none">
               Sign in
             </button>
@@ -225,17 +249,32 @@
 
   <!-- ✨ Particles Script -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
       feather.replace();
-
       particlesJS("particles-js", {
         particles: {
-          number: { value: 80, density: { enable: true, value_area: 800 } },
-          color: { value: "#ffffff" },
-          shape: { type: "circle" },
-          opacity: { value: 0.4 },
-          size: { value: 3, random: true },
+          number: {
+            value: 80,
+            density: {
+              enable: true,
+              value_area: 800
+            }
+          },
+          color: {
+            value: "#ffffff"
+          },
+          shape: {
+            type: "circle"
+          },
+          opacity: {
+            value: 0.4
+          },
+          size: {
+            value: 3,
+            random: true
+          },
           line_linked: {
             enable: true,
             distance: 150,
@@ -243,18 +282,73 @@
             opacity: 0.2,
             width: 1,
           },
-          move: { enable: true, speed: 2 },
+          move: {
+            enable: true,
+            speed: 2
+          },
         },
         interactivity: {
           events: {
-            onhover: { enable: true, mode: "repulse" },
-            onclick: { enable: true, mode: "push" },
+            onhover: {
+              enable: true,
+              mode: "repulse"
+            },
+            onclick: {
+              enable: true,
+              mode: "push"
+            },
           },
-          modes: { repulse: { distance: 100, duration: 0.4 } },
+          modes: {
+            repulse: {
+              distance: 100,
+              duration: 0.4
+            }
+          },
         },
         retina_detect: true,
       });
     });
+    
+    const loginForm = document.querySelector("form");
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(loginForm);
+      try {
+        const res = await fetch("login_verify.php", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        if (data.status === 'success' && data.redirect) {
+          window.location.href = data.redirect;
+        } else {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: data.message,
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            customClass: {
+              popup: 'login-swal'
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Something went wrong!',
+          showConfirmButton: false,
+          timer: 2500,
+          timerProgressBar: true
+        });
+      }
+    });
   </script>
 </body>
+
 </html>
