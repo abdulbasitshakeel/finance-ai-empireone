@@ -418,7 +418,7 @@ include_once('include/auth.php');
 
     <!-- Edit Modal -->
     <div id="editModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm transition-all duration-300">
-        <div class="bg-gradient-to-br from-white via-pink-50 to-white rounded-2xl shadow-[0_0_40px_rgba(236,72,153,0.15)] w-full max-w-3xl p-6 relative border border-pink-100 animate-fadeIn">
+        <div class="bg-gradient-to-br from-white via-pink-50 to-white rounded-2xl shadow-[0_0_40px_rgba(236,72,153,0.15)] w-full max-w-3xl p-6 relative border border-pink-100 animate-fadeIn" style="max-width: 1050px;">
             <button id="closeEditModal" class="absolute top-3 right-4 text-gray-500 hover:text-pink-600 text-3xl leading-none">&times;</button>
 
             <h3 class="text-2xl font-bold text-pink-600 mb-6 flex items-center border-b border-pink-100 pb-3"><i data-lucide="edit-3" class="w-6 h-6 mr-2"></i> Edit Record</h3>
@@ -429,7 +429,7 @@ include_once('include/auth.php');
                 <div class="flex flex-col items-center justify-center bg-white/70 border border-pink-100 rounded-xl p-5 shadow-inner">
                     <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center"><i data-lucide="image" class="w-4 h-4 mr-2 text-pink-500"></i> Upload / Preview</h4>
                     <img id="editPreview" src="https://placehold.co/300x300/fce7f3/db2777?text=IMG" class="rounded-xl border border-pink-200 shadow-md object-contain max-h-[280px] w-auto mb-4">
-                    <input type="file" id="editImage" accept="image/*" class="text-sm text-gray-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-pink-100 file:text-pink-700 hover:file:bg-pink-200 cursor-pointer">
+                    <!-- <input type="file" id="editImage" accept="image/*" class="text-sm text-gray-700 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-pink-100 file:text-pink-700 hover:file:bg-pink-200 cursor-pointer"> -->
                 </div>
 
                 <!-- Right: Form Fields with Scroll -->
