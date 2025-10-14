@@ -87,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function () {
         dropzone.addEventListener('click', () => { dropzone.querySelector('input[type="file"]').click(); });
     }
 
-    // --- Image Upload Handling ---
     const fileInput = dropzone.querySelector('input[type="file"]');
 
     async function uploadImage(file) {
@@ -188,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
     let financialTrendsChart, comparisonChart;
 
     async function fetchDashboardData() {
@@ -204,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateStatCards(data) {
         if (!data) return;
-
         document.getElementById('grossPurchases').textContent = `₱ ${data.grossPurchases.toLocaleString()}`;
         document.getElementById('netPurchases').textContent = `₱ ${data.netPurchases.toLocaleString()}`;
         document.getElementById('inputTax').textContent = `₱ ${data.inputTax.toLocaleString()}`;
@@ -215,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function getChartOptions(data) {
         const textColor = '#475569';
         const gridColor = '#e2e8f0';
-
         return {
             financialTrends: {
                 series: [
@@ -223,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     { name: 'Input Tax', data: data.monthlyFinancialTrends.map(d => d.inputTax) },
                     { name: 'Net Purchases', data: data.monthlyFinancialTrends.map(d => d.netPurchases) }
                 ],
-                chart: { height: 350, type: 'area', toolbar: { show: false }, background: 'transparent', zoom: { enabled: false }, animations: { enabled: true } },
+                chart: { height: 350, type: 'area', toolbar: { show: false }, background: 'transparent' },
                 dataLabels: { enabled: false },
                 stroke: { curve: 'smooth', width: 2.5 },
                 colors: ['#ec4899', '#d946ef', '#8b5cf6'],
@@ -259,31 +255,34 @@ document.addEventListener('DOMContentLoaded', function () {
     async function renderDashboard() {
         const data = await fetchDashboardData();
         if (!data) return;
-
         updateStatCards(data);
-
         const options = getChartOptions(data);
-
         if (financialTrendsChart) financialTrendsChart.destroy();
         if (comparisonChart) comparisonChart.destroy();
-
         financialTrendsChart = new ApexCharts(document.querySelector("#financialTrendsChart"), options.financialTrends);
         comparisonChart = new ApexCharts(document.querySelector("#comparisonChart"), options.comparison);
-
         financialTrendsChart.render();
         comparisonChart.render();
     }
 
+    // --- Data Table Logic ---
     let dataTable = $('#dataViewerTable').DataTable({
-        "dom": 't<"flex justify-end pt-4"p>',
-        "paging": true,
-        "searching": true,
-        "pageLength": 7,
-        "info": false,
-        "lengthChange": false
+        dom: 't<"flex justify-end pt-4"p>',
+        paging: true,
+        searching: true,
+        pageLength: 7,
+        info: false,
+        lengthChange: false,
+        columnDefs: [
+            { orderable: false, targets: -1 }
+        ],
+        drawCallback: function () {
+            // ✅ FIX 1: Lucide icons reload properly
+            if (window.feather) feather.replace();
+            if (window.lucide) lucide.createIcons();
+        }
     });
 
-    // Re-initialize search for the filter input
     const filterSearchInput = document.querySelector('#data-viewer input[type="text"]');
     if (filterSearchInput) {
         filterSearchInput.addEventListener('keyup', function () {
@@ -291,7 +290,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- Data Viewer Dynamic Fetching ---
     async function fetchDataViewerData(params = {}) {
         const query = new URLSearchParams(params).toString();
         const response = await fetch(`dataViewerData.php?${query}`);
@@ -313,7 +311,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const result = await fetchDataViewerData(params);
-
             if (result.status !== 'success' || !Array.isArray(result.data)) {
                 dataTable.clear().draw();
                 return;
@@ -327,10 +324,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 item.supplierAddress || '—',
                 item.grossAmount ? `₱${Number(item.grossAmount).toLocaleString()}` : '—',
                 item.netAmount ? `₱${Number(item.netAmount).toLocaleString()}` : '—',
-                item.inputTax ? `₱${Number(item.inputTax).toLocaleString()}` : '<span class="text-red-500">NA</span>'
+                item.inputTax ? `₱${Number(item.inputTax).toLocaleString()}` : '<span class="text-red-500">NA</span>',
+                `
+                <div class="flex items-center justify-center space-x-3">
+                    <button class="view-btn text-blue-500 hover:text-blue-700" title="View">
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                    </button>
+                    <button class="edit-btn text-green-500 hover:text-green-700" title="Edit">
+                        <i data-lucide="edit" class="w-5 h-5"></i>
+                    </button>
+                    <button class="delete-btn text-red-500 hover:text-red-700" title="Delete">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                `
             ]);
 
             dataTable.clear().rows.add(rows).draw();
+            feather.replace();
+            if (window.lucide) lucide.createIcons();
 
         } catch (error) {
             console.error("Data Viewer Load Error:", error);
@@ -360,22 +372,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (result.status === 'success') {
                 supplierSelect.innerHTML = `<option value="">All Suppliers</option>`;
                 categorySelect.innerHTML = `<option value="">All Expense Categories</option>`;
-
                 result.suppliers.forEach(supplier => {
                     const opt = document.createElement('option');
                     opt.value = supplier;
                     opt.textContent = supplier;
                     supplierSelect.appendChild(opt);
                 });
-
                 result.categories.forEach(category => {
                     const opt = document.createElement('option');
                     opt.value = category;
                     opt.textContent = category;
                     categorySelect.appendChild(opt);
                 });
-            } else {
-                console.warn('Dropdown data not loaded properly:', result);
             }
         } catch (error) {
             console.error('Error loading dropdown options:', error);
@@ -385,19 +393,15 @@ document.addEventListener('DOMContentLoaded', function () {
     loadDropdownOptions();
     loadDataViewerTable();
 
-    // --- Reset Filters Button ---
     resetFiltersBtn.addEventListener('click', async () => {
         const supplierSelect = document.getElementById('supplierSelect');
         const categorySelect = document.getElementById('categorySelect');
         const searchInput = document.querySelector('#data-viewer input[type="text"]');
-
         searchInput.value = '';
         supplierSelect.value = '';
         categorySelect.value = '';
-
         const dataTableInstance = $('#dataViewerTable').DataTable();
         dataTableInstance.search('').draw();
-
         await loadDataViewerTable();
     });
 
@@ -408,4 +412,164 @@ document.addEventListener('DOMContentLoaded', function () {
         const activeTab = document.querySelector('.tab-link.text-pink-500');
         movePill(activeTab);
     });
+
+  // --- Light View/Edit/Delete Modals ---
+    document.addEventListener('click', async (e) => {
+        // ✅ VIEW MODAL
+        if (e.target.closest('.view-btn')) {
+            const row = e.target.closest('tr');
+            const cells = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
+            const imgSrc = row.querySelector('img')?.src || 'https://placehold.co/400x350/fce7f3/db2777?text=Preview';
+
+            // Populate image
+            document.getElementById('viewImage').src = imgSrc;
+
+            // Populate data fields (each one in a separate row)
+            document.getElementById('vDate').textContent = cells[1] || '';
+            document.getElementById('vOrderNumber').textContent = cells[2] || '';
+            document.getElementById('vSupplierName').textContent = cells[3] || '';
+            document.getElementById('vSupplierRegisterName').textContent = cells[4] || '';
+            document.getElementById('vSupplierAddress').textContent = cells[5] || '';
+            document.getElementById('vSupplierTIN').textContent = cells[6] || '';
+            document.getElementById('vPurchaseCategory').textContent = cells[7] || '';
+            document.getElementById('vExpenseCategory').textContent = cells[8] || '';
+            document.getElementById('vGrossAmount').textContent = cells[9] || '';
+            document.getElementById('vNetAmount').textContent = cells[10] || '';
+            document.getElementById('vInputTax').textContent = cells[11] || '';
+            document.getElementById('vVatExempt').textContent = cells[12] || '';
+            document.getElementById('vZeroRated').textContent = cells[13] || '';
+
+            openLightModal('viewModal');
+        }
+
+        if (e.target.closest('.edit-btn')) {
+            const row = e.target.closest('tr');
+            const cells = row.querySelectorAll('td');
+            const img = row.querySelector('img')?.src || 'https://placehold.co/400x350/fce7f3/db2777?text=IMG';
+
+            // Fill all inputs
+            document.getElementById('editDate').value = cells[1]?.textContent.trim() || '';
+            document.getElementById('editOrderNumber').value = cells[2]?.textContent.trim() || '';
+            document.getElementById('editSupplierName').value = cells[3]?.textContent.trim() || '';
+            document.getElementById('editSupplierRegisterName').value = cells[4]?.textContent.trim() || '';
+            document.getElementById('editSupplierAddress').value = cells[5]?.textContent.trim() || '';
+            document.getElementById('editSupplierTIN').value = cells[6]?.textContent.trim() || '';
+            document.getElementById('editPurchaseCategory').value = cells[7]?.textContent.trim() || '';
+            document.getElementById('editExpenseCategory').value = cells[8]?.textContent.trim() || '';
+            document.getElementById('editGrossAmount').value = cells[9]?.textContent.replace(/[₱,]/g, '').trim() || '';
+            document.getElementById('editNetAmount').value = cells[10]?.textContent.replace(/[₱,]/g, '').trim() || '';
+            document.getElementById('editInputTax').value = cells[11]?.textContent.replace(/[₱,]/g, '').trim() || '';
+            document.getElementById('editVatExempt').value = cells[12]?.textContent.trim() || '';
+            document.getElementById('editZeroRated').value = cells[13]?.textContent.trim() || '';
+            document.getElementById('editPreview').src = img;
+
+            openLightModal('editModal');
+        }
+
+        if (e.target.closest('.delete-btn')) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Delete this record?',
+                text: 'This action cannot be undone.',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Delete',
+                confirmButtonColor: '#ec4899',
+                cancelButtonColor: '#6b7280',
+                background: '#fff8fb',
+                color: '#374151',
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl border border-pink-100',
+                    confirmButton: 'rounded-lg px-4 py-2 text-sm font-semibold',
+                    cancelButton: 'rounded-lg px-4 py-2 text-sm font-semibold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.closest('tr').remove();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        background: '#fff8fb',
+                        color: '#ec4899',
+                        customClass: { popup: 'rounded-2xl shadow-md border border-pink-100' }
+                    });
+                }
+            });
+        }
+    });
+
+    function openLightModal(id) {
+        const modal = document.getElementById(id);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex', 'fade-in');
+    }
+
+    function closeLightModal(id) {
+        const modal = document.getElementById(id);
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    document.getElementById('closeViewModal').onclick = () => closeLightModal('viewModal');
+    document.getElementById('closeEditModal').onclick = () => closeLightModal('editModal');
+    document.getElementById('cancelEdit').onclick = () => closeLightModal('editModal');
+
+    document.getElementById('editImage').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => document.getElementById('editPreview').src = reader.result;
+            reader.readAsDataURL(file);
+        }
+    });
+
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from {opacity:0; transform: scale(0.95);} to {opacity:1; transform: scale(1);} }
+    `;
+    document.head.appendChild(style);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  // --- Export Modal Logic ---
+  const exportModal = document.getElementById("exportModal");
+  const openExportModalBtn = document.getElementById("openExportModalBtn");
+  const closeExportModalBtn = document.getElementById("closeExportModalBtn");
+  const cancelExportBtn = document.getElementById("cancelExportBtn");
+  const modalPanel = exportModal?.querySelector(".modal-panel");
+
+  if (exportModal && openExportModalBtn && closeExportModalBtn && cancelExportBtn && modalPanel) {
+
+    // Open modal
+    openExportModalBtn.addEventListener("click", () => {
+      exportModal.classList.remove("hidden");
+      exportModal.classList.add("flex");
+      setTimeout(() => {
+        modalPanel.classList.remove("opacity-0", "scale-95");
+        modalPanel.classList.add("opacity-100", "scale-100");
+      }, 10);
+    });
+
+    // Close modal
+    const closeModal = () => {
+      modalPanel.classList.remove("opacity-100", "scale-100");
+      modalPanel.classList.add("opacity-0", "scale-95");
+      setTimeout(() => {
+        exportModal.classList.remove("flex");
+        exportModal.classList.add("hidden");
+      }, 200);
+    };
+
+    closeExportModalBtn.addEventListener("click", closeModal);
+    cancelExportBtn.addEventListener("click", closeModal);
+
+    // Click outside to close
+    exportModal.addEventListener("click", (e) => {
+      if (e.target === exportModal) closeModal();
+    });
+  }
+
 });

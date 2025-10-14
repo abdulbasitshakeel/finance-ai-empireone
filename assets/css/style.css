@@ -1,0 +1,287 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 20px;
+    border: 3px solid transparent;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.gradient-bg {
+    background: linear-gradient(to right, #e4c3e0, #fcc9c6, #fee6c4, #bbd2fe);
+}
+
+.tab-content.active .animated-item {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#active-tab-pill {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profile-dropdown {
+    transform: translateY(-10px) scale(0.95);
+    opacity: 0;
+    transition: all 0.2s ease-out;
+    pointer-events: none;
+}
+
+.profile-dropdown.active {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.bg-white {
+    background-color: rgb(255 255 255 / 79%) !important;
+}
+
+/* Modal Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(50px);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOutDown {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(50px);
+    }
+}
+
+.modal-overlay.open {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.modal-content.open {
+    animation: slideInUp 0.4s ease-out forwards;
+}
+
+.modal-overlay.closed {
+    animation: fadeOut 0.3s ease-out forwards;
+}
+
+.modal-content.closed {
+    animation: slideOutDown 0.4s ease-out forwards;
+}
+
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out;
+}
+
+
+/* =========================
+   SweetAlert2 - Custom Theme
+   Paste after SweetAlert2 CSS
+   ========================= */
+
+/* Theme variables (easy to tweak) */
+:root {
+  --sa-bg: #ffffff;
+  --sa-surface: linear-gradient(180deg, #fff, #fff6fb);
+  --sa-border: rgba(236,72,153,0.12);
+  --sa-shadow: 0 10px 35px rgba(15, 23, 42, 0.12);
+  --sa-primary: #ec4899;      /* pink (confirm) */
+  --sa-primary-2: #d946ef;    /* accent */
+  --sa-danger: #ef4444;       /* delete / error */
+  --sa-muted: #6b7280;        /* secondary text */
+  --sa-radius: 14px;
+  --sa-font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Popup surface */
+.swal2-popup {
+  font-family: var(--sa-font) !important;
+  background: var(--sa-surface) !important;
+  border-radius: var(--sa-radius) !important;
+  border: 1px solid var(--sa-border) !important;
+  box-shadow: var(--sa-shadow) !important;
+  padding: 28px !important;
+  max-width: 560px !important;
+  color: #0f172a !important; /* slate-900 */
+}
+
+/* Title */
+.swal2-title {
+  font-size: 1.125rem !important; /* 18px */
+  font-weight: 700 !important;
+  color: #db2777 !important; /* stronger pink */
+  margin-bottom: 6px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Subtitle / content */
+.swal2-html-container {
+  color: var(--sa-muted) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.45 !important;
+  margin-top: 6px !important;
+  max-height: 46vh;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+/* Icon wrapper */
+.swal2-icon {
+  border-radius: 10px !important;
+  box-shadow: 0 6px 20px rgba(236,72,153,0.08);
+  background: linear-gradient(180deg, rgba(236,72,153,0.08), rgba(217,70,239,0.03)) !important;
+  width: 64px !important;
+  height: 64px !important;
+  margin: 0 auto 12px auto;
+}
+
+/* Icon inner stroke for the default icons */
+.swal2-icon.swal2-success .swal2-success-ring,
+.swal2-icon.swal2-success .swal2-success-circular-line {
+  stroke: var(--sa-primary) !important;
+}
+
+/* Buttons container alignment */
+.swal2-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px !important;
+  padding-top: 8px !important;
+}
+
+/* Confirm button - primary */
+.swal2-confirm {
+  background: linear-gradient(90deg, var(--sa-primary), var(--sa-primary-2)) !important;
+  border: none !important;
+  color: #fff !important;
+  padding: 8px 18px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 6px 18px rgba(217,70,239,0.12);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+
+/* Hover/active on confirm */
+.swal2-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(217,70,239,0.16);
+  filter: brightness(1.02);
+}
+
+/* Cancel button - neutral */
+.swal2-cancel {
+  background: transparent !important;
+  border: 1px solid rgba(15,23,42,0.06) !important;
+  color: var(--sa-muted) !important;
+  padding: 8px 16px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+}
+
+/* Small buttons spacing when stacked on mobile */
+@media (max-width: 420px) {
+  .swal2-popup { padding: 18px !important; border-radius: 12px !important; }
+  .swal2-actions { flex-direction: column-reverse; gap: 12px; }
+  .swal2-confirm, .swal2-cancel { width: 100% !important; }
+}
+
+/* Inputs inside Swal (search, textarea) */
+.swal2-input, .swal2-textarea {
+  border-radius: 10px !important;
+  border: 1px solid rgba(15,23,42,0.06) !important;
+  padding: 10px 12px !important;
+  box-shadow: none !important;
+  font-size: 0.95rem !important;
+  color: #0f172a !important;
+}
+
+/* File input inside swal (if any) - make it match file style */
+.swal2-file {
+  border-radius: 10px !important;
+  padding: 6px !important;
+}
+
+/* Tweak the close (X) */
+.swal2-close {
+  color: #64748b !important;
+  opacity: 0.85 !important;
+  right: 14px !important;
+  top: 12px !important;
+}
+
+/* Small helper: icon colors for different types */
+.swal2-icon.swal2-warning { background: linear-gradient(180deg, #fff7f8, rgba(236,72,153,0.05)) !important; color: #ff6b6b !important; }
+.swal2-icon.swal2-error { background: linear-gradient(180deg, #fff7f7, rgba(239,68,68,0.04)) !important; color: var(--sa-danger) !important; }
+.swal2-icon.swal2-info { background: linear-gradient(180deg, #f3f4f6, rgba(99,102,241,0.03)) !important; color: #6366f1 !important; }
+
+/* subtle scrollbar for long content */
+.swal2-html-container::-webkit-scrollbar {
+  width: 8px;
+}
+.swal2-html-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(236,72,153,0.18), rgba(217,70,239,0.12));
+  border-radius: 10px;
+}
