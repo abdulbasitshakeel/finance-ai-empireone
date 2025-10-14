@@ -84,7 +84,7 @@ if (!$res) {
 $data = [];
 while ($row = $res->fetch_assoc()) {
     $filePath = $row['file_path'];
-    $imageUrl = $filePath && file_exists($filePath) ? $filePath : 'assets/no-image.png';
+    $imageUrl = $filePath && file_exists($filePath) ? $filePath : 'assets/images/no-image.png';
 
     $data[] = [
         "id" => (int) $row["id"],

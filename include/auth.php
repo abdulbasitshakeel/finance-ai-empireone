@@ -17,10 +17,9 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'auth_js') {
     }
     
     $current_user = $_SESSION['logined_user'];
-    $sqlRole = "SELECT role, full_name FROM users WHERE user_id=$current_user";
+    $sqlRole = "SELECT full_name FROM users WHERE user_id=$current_user";
     $resultRole = mysqli_query($conn, $sqlRole);
     $rowRole = mysqli_fetch_assoc($resultRole);
-    $sCurrentRole = $rowRole['role'];
     $sFullName = $rowRole['full_name'];
 }
 
