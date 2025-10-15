@@ -277,7 +277,6 @@ document.addEventListener('DOMContentLoaded', function () {
             { orderable: false, targets: -1 }
         ],
         drawCallback: function () {
-            // ✅ FIX 1: Lucide icons reload properly
             if (window.feather) feather.replace();
             if (window.lucide) lucide.createIcons();
         }
@@ -322,18 +321,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 item.orderNumber || '—',
                 `<span class="font-medium text-slate-900">${item.supplierName || '—'}</span>`,
                 item.supplierAddress || '—',
-                item.grossAmount ? `₱${Number(item.grossAmount).toLocaleString()}` : '—',
-                item.netAmount ? `₱${Number(item.netAmount).toLocaleString()}` : '—',
-                item.inputTax ? `₱${Number(item.inputTax).toLocaleString()}` : '<span class="text-red-500">NA</span>',
+                item.grossAmount ? `₱ ${Number(item.grossAmount).toLocaleString()}` : '—',
+                item.netAmount ? `₱ ${Number(item.netAmount).toLocaleString()}` : '—',
+                item.inputTax ? `₱ ${Number(item.inputTax).toLocaleString()}` : '<span class="text-red-500">NA</span>',
                 `
                 <div class="flex items-center justify-center space-x-3">
-                    <button class="view-btn text-blue-500 hover:text-blue-700" title="View">
+                    <button class="view-btn text-blue-500 hover:text-blue-700" title="View" data-id="${item.id}">
                         <i data-lucide="eye" class="w-5 h-5"></i>
                     </button>
-                    <button class="edit-btn text-green-500 hover:text-green-700" title="Edit">
+                    <button class="edit-btn text-green-500 hover:text-green-700" title="Edit" data-id="${item.id}">
                         <i data-lucide="edit" class="w-5 h-5"></i>
                     </button>
-                    <button class="delete-btn text-red-500 hover:text-red-700" title="Delete">
+                    <button class="delete-btn text-red-500 hover:text-red-700" title="Delete" data-id="${item.id}">
                         <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -413,60 +412,112 @@ document.addEventListener('DOMContentLoaded', function () {
         movePill(activeTab);
     });
 
-  // --- Light View/Edit/Delete Modals ---
-    document.addEventListener('click', async (e) => {
-        // ✅ VIEW MODAL
-        if (e.target.closest('.view-btn')) {
-            const row = e.target.closest('tr');
-            const cells = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
-            const imgSrc = row.querySelector('img')?.src || 'https://placehold.co/400x350/fce7f3/db2777?text=Preview';
+    // --- Light View/Edit/Delete Modals ---
+    document.getElementById('dataViewerTable').addEventListener('click', async (e) => {
+        const viewBtn = e.target.closest('.view-btn');
+        const editBtn = e.target.closest('.edit-btn');
+        const deleteBtn = e.target.closest('.delete-btn');
 
-            // Populate image
-            document.getElementById('viewImage').src = imgSrc;
+        // --- VIEW RECORD ---
+        if (viewBtn) {
+            const id = viewBtn.dataset.id;
 
-            // Populate data fields (each one in a separate row)
-            document.getElementById('vDate').textContent = cells[1] || '';
-            document.getElementById('vOrderNumber').textContent = cells[2] || '';
-            document.getElementById('vSupplierName').textContent = cells[3] || '';
-            document.getElementById('vSupplierRegisterName').textContent = cells[4] || '';
-            document.getElementById('vSupplierAddress').textContent = cells[5] || '';
-            document.getElementById('vSupplierTIN').textContent = cells[6] || '';
-            document.getElementById('vPurchaseCategory').textContent = cells[7] || '';
-            document.getElementById('vExpenseCategory').textContent = cells[8] || '';
-            document.getElementById('vGrossAmount').textContent = cells[9] || '';
-            document.getElementById('vNetAmount').textContent = cells[10] || '';
-            document.getElementById('vInputTax').textContent = cells[11] || '';
-            document.getElementById('vVatExempt').textContent = cells[12] || '';
-            document.getElementById('vZeroRated').textContent = cells[13] || '';
+            try {
+                const formData = new FormData();
+                formData.append('action', 'view');
+                formData.append('id', id);
 
-            openLightModal('viewModal');
+                const response = await fetch('receiptDetail.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const item = data.data;
+
+                    document.getElementById('viewImage').src = item.file_path;
+                    document.getElementById('vDate').textContent = item.date || '';
+                    document.getElementById('vOrderNumber').textContent = item.order_or_reference_number || '';
+                    document.getElementById('vSupplierName').textContent = item.supplier_name || '';
+                    document.getElementById('vSupplierAddress').textContent = item.supplier_address || '';
+                    document.getElementById('vSupplierRegisterName').textContent = item.supplier_register_name || '';
+                    document.getElementById('vSupplierTIN').textContent = item.supplier_tin || '';
+                    document.getElementById('vPurchaseCategory').textContent = item.purchase_category || '';
+                    document.getElementById('vExpenseCategory').textContent = item.expense_category || '';
+                    document.getElementById('vGrossAmount').textContent = `₱ ${Number(item.gross_purchase_amount).toLocaleString()}`;
+                    document.getElementById('vNetAmount').textContent = `₱ ${Number(item.net_purchase_amount).toLocaleString()}`;
+                    document.getElementById('vInputTax').textContent = `₱ ${Number(item.input_tax).toLocaleString()}`;
+                    document.getElementById('vVatExempt').textContent = item.vat_exempt_purchases || '';
+                    document.getElementById('vZeroRated').textContent = item.zero_rated_purchases || '';
+
+                    openLightModal('viewModal');
+                } else {
+                    Swal.fire('Error', data.message || 'Record not found', 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Failed to load record details', 'error');
+            }
         }
 
-        if (e.target.closest('.edit-btn')) {
-            const row = e.target.closest('tr');
-            const cells = row.querySelectorAll('td');
-            const img = row.querySelector('img')?.src || 'https://placehold.co/400x350/fce7f3/db2777?text=IMG';
+        // --- EDIT RECORD ---
+        if (editBtn) {
+            const id = editBtn.dataset.id;
 
-            // Fill all inputs
-            document.getElementById('editDate').value = cells[1]?.textContent.trim() || '';
-            document.getElementById('editOrderNumber').value = cells[2]?.textContent.trim() || '';
-            document.getElementById('editSupplierName').value = cells[3]?.textContent.trim() || '';
-            document.getElementById('editSupplierRegisterName').value = cells[4]?.textContent.trim() || '';
-            document.getElementById('editSupplierAddress').value = cells[5]?.textContent.trim() || '';
-            document.getElementById('editSupplierTIN').value = cells[6]?.textContent.trim() || '';
-            document.getElementById('editPurchaseCategory').value = cells[7]?.textContent.trim() || '';
-            document.getElementById('editExpenseCategory').value = cells[8]?.textContent.trim() || '';
-            document.getElementById('editGrossAmount').value = cells[9]?.textContent.replace(/[₱,]/g, '').trim() || '';
-            document.getElementById('editNetAmount').value = cells[10]?.textContent.replace(/[₱,]/g, '').trim() || '';
-            document.getElementById('editInputTax').value = cells[11]?.textContent.replace(/[₱,]/g, '').trim() || '';
-            document.getElementById('editVatExempt').value = cells[12]?.textContent.trim() || '';
-            document.getElementById('editZeroRated').value = cells[13]?.textContent.trim() || '';
-            document.getElementById('editPreview').src = img;
+            try {
+                const formData = new FormData();
+                formData.append('action', 'view');
+                formData.append('id', id);
 
-            openLightModal('editModal');
+                const response = await fetch('receiptDetail.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const item = data.data;
+
+                    let formattedDate = '';
+                    if (item.date) {
+                        const parts = item.date.split('/');
+                        if (parts.length === 3) {
+                            const [mm, dd, yyyy] = parts;
+                            formattedDate = `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+                        }
+                    }
+
+                    console.log(formattedDate)
+
+                    document.getElementById('editId').value = item.id || '';
+                    document.getElementById('editDate').value = formattedDate || '';
+                    document.getElementById('editOrderNumber').value = item.order_or_reference_number || '';
+                    document.getElementById('editSupplierName').value = item.supplier_name || '';
+                    document.getElementById('editSupplierRegisterName').value = item.supplier_register_name || '';
+                    document.getElementById('editSupplierAddress').value = item.supplier_address || '';
+                    document.getElementById('editSupplierTIN').value = item.supplier_tin || '';
+                    document.getElementById('editPurchaseCategory').value = item.purchase_category || '';
+                    document.getElementById('editExpenseCategory').value = item.expense_category || '';
+                    document.getElementById('editGrossAmount').value = item.gross_purchase_amount || '';
+                    document.getElementById('editNetAmount').value = item.net_purchase_amount || '';
+                    document.getElementById('editInputTax').value = item.input_tax || '';
+                    document.getElementById('editVatExempt').value = item.vat_exempt_purchases || '';
+                    document.getElementById('editZeroRated').value = item.zero_rated_purchases || '';
+                    document.getElementById('editPreview').src = item.file_path;
+
+                    openLightModal('editModal');
+                } else {
+                    Swal.fire('Error', data.message || 'Record not found', 'error');
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Failed to load record details', 'error');
+            }
         }
 
-        if (e.target.closest('.delete-btn')) {
+        // --- DELETE RECORD ---
+        if (deleteBtn) {
+            const id = deleteBtn.dataset.id;
+
             Swal.fire({
                 icon: 'warning',
                 title: 'Delete this record?',
@@ -474,28 +525,84 @@ document.addEventListener('DOMContentLoaded', function () {
                 showCancelButton: true,
                 confirmButtonText: 'Yes, Delete',
                 confirmButtonColor: '#ec4899',
-                cancelButtonColor: '#6b7280',
-                background: '#fff8fb',
-                color: '#374151',
-                customClass: {
-                    popup: 'rounded-2xl shadow-xl border border-pink-100',
-                    confirmButton: 'rounded-lg px-4 py-2 text-sm font-semibold',
-                    cancelButton: 'rounded-lg px-4 py-2 text-sm font-semibold'
-                }
-            }).then((result) => {
+                cancelButtonColor: '#6b7280'
+            }).then(async (result) => {
                 if (result.isConfirmed) {
-                    e.target.closest('tr').remove();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted!',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        background: '#fff8fb',
-                        color: '#ec4899',
-                        customClass: { popup: 'rounded-2xl shadow-md border border-pink-100' }
-                    });
+                    try {
+                        const formData = new FormData();
+                        formData.append('action', 'delete');
+                        formData.append('id', id);
+
+                        const response = await fetch('receiptDetail.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+
+                        if (data.status === 'success') {
+                            loadDropdownOptions();
+                            loadDataViewerTable();
+                            renderDashboard();
+                            Swal.fire('Deleted!', data.message || 'Record deleted.', 'success');
+                        } else {
+                            Swal.fire('Error', data.message || 'Failed to delete record.', 'error');
+                        }
+                    } catch (err) {
+                        Swal.fire('Error', 'Failed to delete record.', 'error');
+                    }
                 }
             });
+        }
+    });
+
+    // --- EDIT FORM SUBMIT (Update Record) ---
+    document.getElementById('editForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        let dateInput = document.getElementById('editDate').value;
+        let [yyyy, mm, dd] = dateInput.split("-");
+        let formattedDate = `${mm}/${dd}/${yyyy}`;
+        formData.set('editDate', formattedDate);
+        formData.append('action', 'update');
+
+        try {
+            Swal.fire({
+                title: 'Updating...',
+                text: 'Please wait while the record is being updated.',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const response = await fetch('receiptDetail.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            Swal.close();
+
+            if (result.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated!',
+                    text: result.message || 'Record updated successfully.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                closeLightModal('editModal');
+                loadDropdownOptions();
+                loadDataViewerTable();
+                renderDashboard();
+
+            } else {
+                Swal.fire('Error', result.message || 'Failed to update record.', 'error');
+            }
+        } catch (err) {
+            Swal.close();
+            Swal.fire('Error', 'An unexpected error occurred while updating.', 'error');
         }
     });
 
@@ -515,14 +622,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('closeEditModal').onclick = () => closeLightModal('editModal');
     document.getElementById('cancelEdit').onclick = () => closeLightModal('editModal');
 
-    document.getElementById('editImage').addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => document.getElementById('editPreview').src = reader.result;
-            reader.readAsDataURL(file);
-        }
-    });
+    // document.getElementById('editImage').addEventListener('change', function (e) {
+    //     const file = e.target.files[0];
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.onload = () => document.getElementById('editPreview').src = reader.result;
+    //         reader.readAsDataURL(file);
+    //     }
+    // });
 
     const style = document.createElement('style');
     style.innerHTML = `
@@ -530,46 +637,118 @@ document.addEventListener('DOMContentLoaded', function () {
         @keyframes fadeIn { from {opacity:0; transform: scale(0.95);} to {opacity:1; transform: scale(1);} }
     `;
     document.head.appendChild(style);
-});
 
-document.addEventListener("DOMContentLoaded", () => {
+    // --- Export Modal Logic ---
+    const exportModal = document.getElementById("exportModal");
+    const openExportModalBtn = document.getElementById("openExportModalBtn");
+    const closeExportModalBtn = document.getElementById("closeExportModalBtn");
+    const cancelExportBtn = document.getElementById("cancelExportBtn");
+    const modalPanel = exportModal?.querySelector(".modal-panel");
 
-  // --- Export Modal Logic ---
-  const exportModal = document.getElementById("exportModal");
-  const openExportModalBtn = document.getElementById("openExportModalBtn");
-  const closeExportModalBtn = document.getElementById("closeExportModalBtn");
-  const cancelExportBtn = document.getElementById("cancelExportBtn");
-  const modalPanel = exportModal?.querySelector(".modal-panel");
+    if (exportModal && openExportModalBtn && closeExportModalBtn && cancelExportBtn && modalPanel) {
 
-  if (exportModal && openExportModalBtn && closeExportModalBtn && cancelExportBtn && modalPanel) {
+        // Open modal
+        openExportModalBtn.addEventListener("click", () => {
+        exportModal.classList.remove("hidden");
+        exportModal.classList.add("flex");
+        setTimeout(() => {
+            modalPanel.classList.remove("opacity-0", "scale-95");
+            modalPanel.classList.add("opacity-100", "scale-100");
+        }, 10);
+        });
 
-    // Open modal
-    openExportModalBtn.addEventListener("click", () => {
-      exportModal.classList.remove("hidden");
-      exportModal.classList.add("flex");
-      setTimeout(() => {
-        modalPanel.classList.remove("opacity-0", "scale-95");
-        modalPanel.classList.add("opacity-100", "scale-100");
-      }, 10);
-    });
+        // Close modal
+        const closeModal = () => {
+        modalPanel.classList.remove("opacity-100", "scale-100");
+        modalPanel.classList.add("opacity-0", "scale-95");
+        setTimeout(() => {
+            exportModal.classList.remove("flex");
+            exportModal.classList.add("hidden");
+        }, 200);
+        };
 
-    // Close modal
-    const closeModal = () => {
-      modalPanel.classList.remove("opacity-100", "scale-100");
-      modalPanel.classList.add("opacity-0", "scale-95");
-      setTimeout(() => {
-        exportModal.classList.remove("flex");
-        exportModal.classList.add("hidden");
-      }, 200);
-    };
+        closeExportModalBtn.addEventListener("click", closeModal);
+        cancelExportBtn.addEventListener("click", closeModal);
 
-    closeExportModalBtn.addEventListener("click", closeModal);
-    cancelExportBtn.addEventListener("click", closeModal);
+        // Click outside to close
+        exportModal.addEventListener("click", (e) => {
+        if (e.target === exportModal) closeModal();
+        });
+    }
 
-    // Click outside to close
-    exportModal.addEventListener("click", (e) => {
-      if (e.target === exportModal) closeModal();
-    });
-  }
+    async function exportReceiptData() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
 
+        if (!startDate || !endDate) {
+            Swal.fire({
+            icon: 'warning',
+            title: 'Missing Dates',
+            text: 'Please select both start and end dates',
+            timer: 2000,
+            showConfirmButton: false
+            });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('start_date', startDate);
+        formData.append('end_date', endDate);
+
+        const checkResponse = await fetch('exportReceipts.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const contentType = checkResponse.headers.get('Content-Type');
+
+        if (contentType && contentType.includes('application/json')) {
+            const result = await checkResponse.json();
+
+            Swal.fire({
+                icon: 'error',
+                title: 'No Record Found',
+                text: result.message || 'No data found in the selected date range',
+                timer: 2500,
+                showConfirmButton: false
+            });
+        } else {
+            const blob = await checkResponse.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'receipts_data_export.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Download Started!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    }
+
+    document.getElementById('exportReceiptsBtn').addEventListener('click', exportReceiptData);
+
+    async function checkAuth() {
+        try {
+            const res = await fetch("include/auth.php?action=auth_js", { method: "POST" });
+            const data = await res.json();
+            if (data.response) window.location.href = "login.php";
+        } catch (err) {
+            console.error("Auth error:", err);
+        }
+    }
+
+    setInterval(checkAuth, 15 * 60 * 1000);
+
+    checkAuth();
 });

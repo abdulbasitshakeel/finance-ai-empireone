@@ -353,7 +353,7 @@ include_once('include/auth.php');
             </div>
             <div class="flex justify-end gap-4 mt-8">
                 <button id="cancelExportBtn" class="px-6 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition">Cancel</button>
-                <button class="px-6 py-2 text-sm font-medium text-white bg-pink-500 rounded-lg hover:bg-pink-600 transition">Export</button>
+                <button class="px-6 py-2 text-sm font-medium text-white bg-pink-500 rounded-lg hover:bg-pink-600 transition" id="exportReceiptsBtn">Export</button>
             </div>
         </div>
     </div>
@@ -371,7 +371,7 @@ include_once('include/auth.php');
                 <div class="flex flex-col items-center justify-start bg-white/80 border border-pink-100 rounded-xl p-6 shadow-inner h-full">
                     <h4 class="text-base font-semibold text-gray-700 mb-4 flex items-center"><i data-lucide="image" class="w-4 h-4 mr-2 text-pink-500"></i> Original Image</h4>
                     <div class="flex justify-center items-center w-full">
-                        <img id="viewImage" src="https://placehold.co/450x350/fce7f3/db2777?text=Preview" class="rounded-xl border border-pink-200 shadow-md object-contain max-h-[400px] w-full">
+                        <img id="viewImage" class="rounded-xl border border-pink-200 shadow-md object-contain max-h-[400px] w-full">
                     </div>
                 </div>
 
@@ -385,7 +385,7 @@ include_once('include/auth.php');
                         <div class="flex justify-between border-b border-pink-50 pb-1"><span class="font-semibold">Supplier Name:</span>
                             <span id="vSupplierName"></span>
                         </div>
-                        <div class="flex justify-between border-b border-pink-50 pb-1"><span class="font-semibold">Supplier RegisterName:</span> <span id="vSupplierRegisterName"></span>
+                        <div class="flex justify-between border-b border-pink-50 pb-1"><span class="font-semibold">Supplier Register Name:</span> <span id="vSupplierRegisterName"></span>
                         </div>
                     <div class="flex justify-between border-b border-pink-50 pb-1"><span class="font-semibold">Supplier
                 Address:</span> <span id="vSupplierAddress"></span></div>
@@ -434,64 +434,68 @@ include_once('include/auth.php');
 
                 <!-- Right: Form Fields with Scroll -->
                 <form id="editForm" class="bg-white/70 rounded-xl border border-pink-100 shadow-inner p-5 space-y-4 text-gray-700 text-sm max-h-[65vh] overflow-y-auto">
+
+                    <input type="hidden" name="id" id="editId">
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Date</label>
-                            <input type="date" id="editDate" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="date" name="editDate" id="editDate" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Order #</label>
-                            <input type="text" id="editOrderNumber" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editOrderNumber" id="editOrderNumber" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Supplier Name</label>
-                            <input type="text" id="editSupplierName" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editSupplierName" id="editSupplierName" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Supplier Register Name</label>
-                            <input type="text" id="editSupplierRegisterName" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editSupplierRegisterName" id="editSupplierRegisterName" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Supplier Address</label>
-                            <input type="text" id="editSupplierAddress" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editSupplierAddress" id="editSupplierAddress" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Supplier TIN</label>
-                            <input type="text" id="editSupplierTIN" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editSupplierTIN" id="editSupplierTIN" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Purchase Category</label>
-                            <input type="text" id="editPurchaseCategory" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editPurchaseCategory" id="editPurchaseCategory" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Expense Category</label>
-                            <input type="text" id="editExpenseCategory" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editExpenseCategory" id="editExpenseCategory" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Gross Amount</label>
-                            <input type="number" id="editGrossAmount" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editGrossAmount" id="editGrossAmount" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Net Amount</label>
-                            <input type="number" id="editNetAmount" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editNetAmount" id="editNetAmount" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Input Tax</label>
-                            <input type="number" id="editInputTax" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editInputTax" id="editInputTax" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">VAT Exempt</label>
-                            <input type="text" id="editVatExempt" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editVatExempt" id="editVatExempt" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                         <div>
                             <label class="block text-gray-600 mb-1 font-medium">Zero Rated</label>
-                            <input type="text" id="editZeroRated" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
+                            <input type="text" name="editZeroRated" id="editZeroRated" class="w-full rounded-xl border border-gray-200 px-3 py-2 bg-white focus:ring-2 focus:ring-pink-300 focus:border-pink-300 shadow-sm">
                         </div>
                     </div>
 
                     <div class="flex justify-end gap-4 pt-5 border-t border-pink-100 mt-5">
                         <button type="button" id="cancelEdit" class="px-6 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 shadow-sm">Cancel</button>
-                        <button type="submit" class="px-6 py-2 rounded-lg bg-pink-500 text-white hover:bg-pink-600 shadow-md hover:shadow-lg transition">Save Changes
+                        <button type="submit" class="px-6 py-2 rounded-lg bg-pink-500 text-white hover:bg-pink-600 shadow-md hover:shadow-lg transition">
+                            Save Changes
                         </button>
                     </div>
                 </form>
