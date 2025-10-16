@@ -197,6 +197,31 @@ if(isset($_SESSION['logined_user']))
       transform: scale(0.98);
       box-shadow: 0 0 8px rgba(236, 72, 153, 0.3);
     }
+
+    /* Custom SweetAlert2 Toast for Login */
+    .login-swal {
+      background: #fff3f3 !important;          /* light red background */
+      color: #991b1b !important;               /* dark red text */
+      border: 1px solid #fecaca !important;    /* soft red border */
+      border-radius: 12px !important;          /* rounded corners */
+      font-size: 15px !important;
+      font-weight: 500 !important;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18) !important;
+      padding: 10px 16px !important;
+    }
+
+    /* Title text */
+    .login-swal .swal2-title {
+      font-size: 16px !important;
+      font-weight: 600 !important;
+    }
+
+    /* Progress bar */
+    .login-swal .swal2-timer-progress-bar {
+      background: linear-gradient(to right, #ef4444, #f87171) !important;
+      height: 4px !important;
+      border-radius: 4px !important;
+    }
   </style>
 </head>
 
