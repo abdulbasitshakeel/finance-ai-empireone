@@ -727,6 +727,16 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('startDate').value = '';
             document.getElementById('endDate').value = '';
 
+            const exportModal = document.getElementById("exportModal");
+            const modalPanel = exportModal?.querySelector(".modal-panel");
+
+            modalPanel.classList.remove("opacity-100", "scale-100");
+            modalPanel.classList.add("opacity-0", "scale-95");
+            setTimeout(() => {
+                exportModal.classList.remove("flex");
+                exportModal.classList.add("hidden");
+            }, 200);
+
             Swal.fire({
                 icon: 'success',
                 title: 'Download Started!',

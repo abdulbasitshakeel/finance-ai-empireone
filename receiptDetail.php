@@ -30,6 +30,32 @@ switch ($action) {
 
     case 'delete':
         if ($id > 0) {
+            $sql = "SELECT image_id FROM reciepts_data WHERE id = $id LIMIT 1";
+            $result = mysqli_query($conn, $sql);
+
+            if (mysqli_num_rows($result) == 0) {
+                echo json_encode(["status" => "error", "message" => "Image Record not found."]);
+                exit;
+            }
+
+            $row = mysqli_fetch_assoc($result);
+            $image_id = $row['image_id'];
+
+            $sqlImage = "SELECT file_path FROM receipt_images WHERE image_id = $image_id LIMIT 1";
+            $resultImage = mysqli_query($conn, $sqlImage);
+
+            if (mysqli_num_rows($resultImage) > 0)
+            {
+                $imageRow = mysqli_fetch_assoc($resultImage);
+                $filePath = $imageRow['file_path'];
+
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+
+                mysqli_query($conn, "DELETE FROM receipt_images WHERE image_id = $image_id");
+            }
+
             $query = "DELETE FROM reciepts_data WHERE id = $id";
             if ($conn->query($query)) {
                 $response = ['status' => 'success', 'message' => 'Record deleted successfully'];
