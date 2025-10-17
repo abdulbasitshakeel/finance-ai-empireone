@@ -184,24 +184,22 @@ include_once('include/auth.php');
                 </div>
 
                 <div class="mt-6 bg-white rounded-xl shadow-md animated-item border border-slate-200 p-6 overflow-x-auto" style="opacity:0; animation-delay: 200ms;">
-                   <div class="table-container" style="max-width:100%;">
-                        <table id="dataViewerTable" class="w-full text-base text-left text-slate-500 table-fixed" style="width:100%;">
-                            <thead class="text-sm text-white uppercase bg-pink-500">
+                   <table id="dataViewerTable" class="w-full text-base text-left text-slate-500" style="width:100%">
+                        <thead class="text-sm text-white uppercase bg-pink-500">
                             <tr>
-                                <th scope="col" class="px-3 py-3 w-[60px]">Image</th>
-                                <th scope="col" class="px-3 py-3 w-[90px]">Date</th>
-                                <th scope="col" class="px-3 py-3 w-[90px]">Order #</th>
-                                <th scope="col" class="px-3 py-3 w-[120px]">Supplier</th>
-                                <th scope="col" class="px-3 py-3 w-[150px] truncate">Address</th>
-                                <th scope="col" class="px-3 py-3 w-[80px]">Gross</th>
-                                <th scope="col" class="px-3 py-3 w-[80px]">Net</th>
-                                <th scope="col" class="px-3 py-3 w-[80px]">VAT</th>
-                                <th scope="col" class="px-3 py-3 text-center w-[80px]">Action</th>
+                                <th scope="col" class="px-6 py-4">Image</th>
+                                <th scope="col" class="px-6 py-4">Date</th>
+                                <th scope="col" class="px-6 py-4">Order #</th>
+                                <th scope="col" class="px-6 py-4">Supplier</th>
+                                <th scope="col" class="px-6 py-4">Address</th>
+                                <th scope="col" class="px-6 py-4">Gross</th>
+                                <th scope="col" class="px-6 py-4">Net</th>
+                                <th scope="col" class="px-6 py-4">VAT</th>
+                                <th scope="col" class="px-6 py-4 text-center">Action</th>
                             </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
 
